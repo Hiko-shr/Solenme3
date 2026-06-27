@@ -2,11 +2,11 @@
 FROM maven:3.8.5-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copiamos solo el pom.xml y el código fuente (¡Adiós .mvn!)
+# Copiamos solo el pom.xml y el código fuente
 COPY pom.xml ./
 COPY src ./src
 
-# Compilamos el proyecto usando el Maven oficial
+# Compilamos el proyecto
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Imagen final ligera
