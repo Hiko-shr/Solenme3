@@ -14,10 +14,6 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # Este paso te mostrará en los logs qué archivos subiste realmente
-    - name: Verificar archivos
-      run: ls -la
-
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -31,11 +27,11 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v2
 
     - name: Build, Tag, and Push Image to ECR
-      # 👇 SI TU DOCKERFILE ESTÁ DENTRO DE UNA CARPETA, QUITA EL '#' Y PON EL NOMBRE AQUÍ:
-      # working-directory: ./nombre-de-tu-carpeta
+      # 👇 AQUÍ LE DECIMOS A GITHUB EN QUÉ CARPETA ESTÁ EL DOCKERFILE
+      working-directory: ./ventas  # <--- CAMBIA "ventas" por el nombre exacto de tu carpeta (ej: ./despachos)
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: tu-repositorio-ecr-front # 👈 PON TU REPOSITORIO DE ECR AQUÍ
+        ECR_REPOSITORY: tu-repositorio-ecr-ventas # <--- CAMBIA ESTO por el nombre de tu repositorio en ECR
         IMAGE_TAG: latest
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -43,4 +39,5 @@ jobs:
 
     - name: Deploy to Amazon ECS
       run: |
-        aws ecs update-service --cluster solenme-cluster --service task-front-despacho-service --force-new-deployment --region us-east-1
+        aws ecs update-service --cluster solenme-cluster --service service-back-ventas --force-new-deployment --region us-east-1
+        # 👆 CAMBIA "service-back-ventas" por el nombre exacto de tu servicio en ECS
