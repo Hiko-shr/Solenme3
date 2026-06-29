@@ -1,37 +1,9 @@
-name: CI/CD Pipeline to AWS ECS
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  deploy:
-    name: Build, Push and Deploy
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-        aws-region: us-east-1
-
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
-
-    - name: Build, Tag, and Push Image to ECR
+- name: Build, Tag, and Push Image to ECR
       # Entramos a la carpeta donde está tu código real (pom.xml y src)
       working-directory: ./back-Despachos_SpringBoot/Springboot-API-REST-DESPACHO
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: back-despachos
+        ECR_REPOSITORY: back-despachos-repo # <-- Nombre corregido
         IMAGE_TAG: latest
       run: |
         # Le indicamos explícitamente con -f dónde está el Dockerfile huérfano
@@ -40,4 +12,5 @@ jobs:
 
     - name: Deploy to Amazon ECS
       run: |
-        aws ecs update-service --cluster solenme-cluster --service service-back-despachos --force-new-deployment --region us-east-1
+        # Nombres de cluster y servicio corregidos
+        aws ecs update-service --cluster innova-cluster --service back-despachos-service --force-new-deployment --region us-east-1
